@@ -79,6 +79,18 @@ function sound(type){
    case 'shot':noise(.22,'highpass',850,0,.32,.002,.13);noise(.12,'bandpass',2100,1,.16,.001,.055,.012);thump(115,48,.12,.22);break;
    case 'explosion':noise(1.15,'lowpass',1250,.7,.72,.008,1.05);noise(.48,'highpass',1700,.4,.22,.002,.34,.015);thump(105,28,.72,.8);thump(58,24,1.05,.38,.06);break;
    case 'grenade':noise(.36,'bandpass',900,1.2,.22,.008,.3);metallic(1250,.12,.08,.03);break;
+   case 'kill':{
+    const pitch=.82+Math.random()*.38;
+    noise(.72,'bandpass',520*pitch,2.2,.28,.025,.68);
+    noise(.48,'bandpass',1120*pitch,3.5,.12,.018,.43,.035);
+    const groan=ctx.createOscillator(),formant=ctx.createBiquadFilter(),voice=ctx.createGain(),vibrato=ctx.createOscillator(),vibGain=ctx.createGain();
+    groan.type='sawtooth';groan.frequency.setValueAtTime(145*pitch,t);groan.frequency.exponentialRampToValueAtTime(58*pitch,t+.58);
+    formant.type='bandpass';formant.frequency.setValueAtTime(620*pitch,t);formant.frequency.linearRampToValueAtTime(310*pitch,t+.62);formant.Q.value=2.8;
+    voice.gain.setValueAtTime(.0001,t);voice.gain.linearRampToValueAtTime(.095,t+.045);voice.gain.setValueAtTime(.07,t+.2);voice.gain.exponentialRampToValueAtTime(.0001,t+.7);
+    vibrato.frequency.value=5.2;vibGain.gain.value=7;vibrato.connect(vibGain);vibGain.connect(groan.frequency);
+    groan.connect(formant);formant.connect(voice);voice.connect(ctx.destination);groan.start(t);vibrato.start(t);groan.stop(t+.72);vibrato.stop(t+.72);
+    thump(78,38,.32,.17,.06);break;
+   }
    case 'hurt':noise(.2,'bandpass',420,1,.22,.003,.17);thump(95,48,.19,.22);break;
    case 'death':noise(.95,'lowpass',480,1,.34,.04,.9);thump(72,26,.85,.3);break;
    case 'boss':noise(1.7,'bandpass',260,1.1,.34,.12,1.6);thump(62,29,1.5,.45);metallic(78,.8,.08,.08);break;
