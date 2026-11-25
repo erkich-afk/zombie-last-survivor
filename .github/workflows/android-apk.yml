@@ -9,7 +9,7 @@ on:
       - '.github/workflows/android-apk.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -54,3 +54,11 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish APK to GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v1.0.0 android/app/build/outputs/apk/debug/app-debug.apk \\
+            --title "ZOMBIE: LAST SURVIVOR 1.0.0" \\
+            --notes "Первая Android-сборка игры ZOMBIE: LAST SURVIVOR. Скачайте APK и установите на Android."
